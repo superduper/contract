@@ -4,20 +4,14 @@ import "fmt"
 
 var SuppressPanic bool = false
 
-func shoutAndPanic(descrf ...string) {
+const EmptyDescrf = ""
+
+func shoutAndPanic(descrf string, fmtargs ...interface{}) {
 	var err error
-	if len(descrf) == 0 {
+	if descrf == EmptyDescrf {
 		err = fmt.Errorf("failed to meet the contract")
 	} else {
-		if len(descrf) == 1 {
-			err = fmt.Errorf(descrf[0])
-		} else {
-			fmtargs := make([]interface{}, len(descrf[1:]))
-			for i, v := range descrf[1:] {
-				fmtargs[i] = interface{}(v)
-			}
-			err = fmt.Errorf(descrf[0], fmtargs...)
-		}
+		err = fmt.Errorf(descrf, fmtargs...)
 	}
 	if SuppressPanic {
 		fmt.Println(err)
@@ -26,43 +20,76 @@ func shoutAndPanic(descrf ...string) {
 	}
 }
 
-func shoutAndPanicIf(orly bool, descrf ...string) {
+func shoutAndPanicIf(orly bool, descrf string, fmtargs ...interface{}) {
 	if orly {
-		shoutAndPanic(descrf...)
+		shoutAndPanic(descrf, fmtargs...)
 	}
 }
 
-func Require(success bool, descrf ...string) {
-	shoutAndPanicIf(!success, descrf...)
+func Requiref(success bool, descrf string, fmtargs ...interface{}) {
+	shoutAndPanicIf(!success, descrf, fmtargs...)
 }
 
-func MustBeTrue(success bool, descrf ...string) {
-	shoutAndPanicIf(success == true, descrf...)
+func MustBeTruef(success bool, descrf string, fmtargs ...interface{}) {
+	shoutAndPanicIf(success == true, descrf, fmtargs...)
 }
 
-func MustNotBeNil(v interface{}, descrf ...string) {
-	shoutAndPanicIf(v == nil, descrf...)
+func MustNotBeNilf(v interface{}, descrf string, fmtargs ...interface{}) {
+	shoutAndPanicIf(v == nil, descrf, fmtargs...)
 }
 
-func MustBeNil(v interface{}, descrf ...string) {
-	shoutAndPanicIf(v != nil, descrf...)
+func MustBeNilf(v interface{}, descrf string, fmtargs ...interface{}) {
+	shoutAndPanicIf(v != nil, descrf, fmtargs...)
 }
 
-func RequireArg(v interface{}, descrf ...string) {
-	if len(descrf) == 0 {
-		descrf = []string{"nil passed instead of real value"}
-	}
-	MustNotBeNil(v, descrf...)
+func RequireArgf(v interface{}, descrf string, fmtargs ...interface{}) {
+	MustNotBeNilf(v, descrf, fmtargs...)
 }
 
-func MustBeFalse(success bool, descrf ...string) {
-	shoutAndPanicIf(success == false, descrf...)
+func MustBeFalsef(success bool, descrf string, fmtargs ...interface{}) {
+	shoutAndPanicIf(success == false, descrf, fmtargs...)
 }
 
-func RequireNoError(err error, descrf ...string) {
-	shoutAndPanicIf(err != nil, descrf...)
+func RequireNoErrorf(err error, descrf string, fmtargs ...interface{}) {
+	shoutAndPanicIf(err != nil, descrf, fmtargs...)
 }
 
-func Guarantee(success bool, descrf ...string) {
-	shoutAndPanicIf(!success, descrf...)
+func Guaranteef(success bool, descrf string, fmtargs ...interface{}) {
+	shoutAndPanicIf(!success, descrf, fmtargs...)
+}
+
+/*
+	Without formatting
+*/
+
+func Require(success bool) {
+	shoutAndPanicIf(!success, EmptyDescrf)
+}
+
+func MustBeTrue(success bool) {
+	shoutAndPanicIf(success == true, EmptyDescrf)
+}
+
+func MustNotBeNil(v interface{}) {
+	shoutAndPanicIf(v == nil, EmptyDescrf)
+}
+
+func MustBeNil(v interface{}) {
+	shoutAndPanicIf(v != nil, EmptyDescrf)
+}
+
+func RequireArg(v interface{}) {
+	MustNotBeNilf(v, "nil passed instead of real value")
+}
+
+func MustBeFalse(success bool) {
+	shoutAndPanicIf(success == false, EmptyDescrf)
+}
+
+func RequireNoError(err error) {
+	shoutAndPanicIf(err != nil, EmptyDescrf)
+}
+
+func Guarantee(success bool) {
+	shoutAndPanicIf(!success, EmptyDescrf)
 }
