@@ -90,6 +90,13 @@ func RequireNoError(err error) {
 	shoutAndPanicIf(err != nil, EmptyDescrf)
 }
 
+func RequireNoErrors(conds ...func() error) {
+	for _, cond := range conds {
+		err := cond()
+		shoutAndPanicIf(err != nil, EmptyDescrf)
+	}
+}
+
 func Guarantee(success bool) {
 	shoutAndPanicIf(!success, EmptyDescrf)
 }
