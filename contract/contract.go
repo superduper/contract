@@ -31,7 +31,7 @@ func Requiref(success bool, descrf string, fmtargs ...interface{}) {
 }
 
 func MustBeTruef(success bool, descrf string, fmtargs ...interface{}) {
-	shoutAndPanicIf(success == true, descrf, fmtargs...)
+	shoutAndPanicIf(!success, descrf, fmtargs...)
 }
 
 func MustNotBeNilf(v interface{}, descrf string, fmtargs ...interface{}) {
@@ -67,7 +67,7 @@ func Require(success bool) {
 }
 
 func MustBeTrue(success bool) {
-	shoutAndPanicIf(success == true, EmptyDescrf)
+	shoutAndPanicIf(!success, EmptyDescrf)
 }
 
 func MustNotBeNil(v interface{}) {
@@ -93,7 +93,9 @@ func RequireNoError(err error) {
 func RequireNoErrors(conds ...func() error) {
 	for _, cond := range conds {
 		err := cond()
-		shoutAndPanicIf(err != nil, EmptyDescrf)
+		if err != nil {
+			shoutAndPanic("Contract failed because of: %s", err.Error())
+		}
 	}
 }
 
